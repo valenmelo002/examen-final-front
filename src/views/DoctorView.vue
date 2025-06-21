@@ -49,6 +49,13 @@
       </v-form>
     </div>
 
+    <!-- Botón para ir a horarios -->
+    <div class="mb-4 d-flex justify-end">
+      <v-btn color="secondary" prepend-icon="mdi-calendar-clock" @click="goToHorarios">
+        Ver Horarios de Doctores
+      </v-btn>
+    </div>
+
     <!-- Tabla -->
     <v-data-table-server
       class="mt-8"
@@ -87,11 +94,18 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import DoctorService from '@/services/DoctorService'
 import EspecialidadService from '@/services/EspecialidadService'
 import ConfirmDialog from '@/components/ModalComponent.vue'
 import EditButtonComponent from '@/components/button/EditComponent.vue'
 import DeleteButtonComponent from '@/components/button/DeleteComponent.vue'
+
+// Redirección
+const router = useRouter()
+function goToHorarios() {
+  router.push('/horarios')
+}
 
 // Tabla
 const headers = ref([
@@ -187,7 +201,6 @@ function editItem(item: any) {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-
 async function deleteItem(item: { id: number }) {
   try {
     await DoctorService.delete(item.id)
@@ -214,7 +227,7 @@ async function loadItems(options: any) {
       telefono: item.telefono ?? '',
       especialidad_id: item.especialidadId ?? null,
       especialidad: item.especialidad?.nombre ?? 'Sin asignar',
-      activo: item.activo === 1, // Asegura que sea booleano
+      activo: item.activo === 1,
     }))
 
     totalItems.value = total
@@ -224,7 +237,6 @@ async function loadItems(options: any) {
     loading.value = false
   }
 }
-
 
 async function loadSelects() {
   especialidades.value = await EspecialidadService.getAll()

@@ -1,5 +1,13 @@
 <template>
   <v-container class="pa-4" style="max-width: 1400px;" fluid>
+
+    <!-- Botón para volver -->
+    <div class="mb-6 d-flex justify-start">
+      <v-btn color="primary" prepend-icon="mdi-arrow-left" @click="goBack">
+        Volver a Doctores
+      </v-btn>
+    </div>
+
     <!-- Formulario -->
     <div class="mb-6">
       <v-form ref="formRef">
@@ -96,11 +104,17 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import DoctorHorarioService from '@/services/DoctorHorarioService'
 import DoctorService from '@/services/DoctorService'
 import ConfirmDialog from '@/components/ModalComponent.vue'
 import EditButtonComponent from '@/components/button/EditComponent.vue'
 import DeleteButtonComponent from '@/components/button/DeleteComponent.vue'
+
+const router = useRouter()
+function goBack() {
+  router.push('/doctores')
+}
 
 const headers = ref([
   { title: 'ID', key: 'id' },
@@ -160,14 +174,11 @@ async function submit() {
   loading.value = true
   try {
     const payload = { ...form.value }
-    let horario
-
     if (mode.value === 'create') {
-      horario = await DoctorHorarioService.create(payload)
+      await DoctorHorarioService.create(payload)
     } else {
-      horario = await DoctorHorarioService.update(form.value.id!, payload)
+      await DoctorHorarioService.update(form.value.id!, payload)
     }
-
     loadItems(currentOptions.value)
     resetForm()
   } catch (e) {
@@ -177,7 +188,6 @@ async function submit() {
   }
 }
 
-// ✅ FUNCIÓN ACTUALIZADA
 function editItem(item: any) {
   form.value = {
     id: item.id,
